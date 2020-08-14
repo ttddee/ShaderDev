@@ -102,7 +102,7 @@ private:
     QSize texSize;
 
     QImage cpuImage;
-    QString imagePath = "C:/Users/tilld/ShaderDev/images/bay.jpg";
+    QString imagePath = "/home/till/ShaderDev/images/bay.jpg";
 
     int concurrentFrameCount;
 

@@ -49,6 +49,9 @@ FORMS += \
     controlswidget.ui \
     mainwindow.ui
 
+RESOURCES += \
+    shaders.qrc
+
 win32-msvc* {
 
 CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD
@@ -92,3 +95,5 @@ LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lGenericCodeGen
 #qnx: target.path = /tmp/$${TARGET}/bin
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 #!isEmpty(target.path): INSTALLS += target
+
+

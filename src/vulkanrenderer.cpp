@@ -237,8 +237,8 @@ void VulkanRenderer::createGraphicsPipelineLayout()
 void VulkanRenderer::createGraphicsPipeline()
 {
     // Vertex and Fragment shader. These never change.
-    VkShaderModule vertShaderModule = createShaderFromFile(QStringLiteral("C:\\Users\\tilld\\Electric\\shaders\\texture_vert.spv"));
-    VkShaderModule fragShaderModule = createShaderFromFile(QStringLiteral("C:\\Users\\tilld\\Electric\\shaders\\texture_frag.spv"));
+    VkShaderModule vertShaderModule = createShaderFromFile(":/shaders/texture_vert.spv");
+    VkShaderModule fragShaderModule = createShaderFromFile(":/shaders/texture_frag.spv");
 
     // Graphics pipeline
     VkGraphicsPipelineCreateInfo pipelineInfo;
@@ -1311,7 +1311,7 @@ VkShaderModule VulkanRenderer::createShaderFromCode(const std::vector<unsigned i
 
     if (shaderCode.size() == 0)
     {
-        QFile file("C:/Users/tilld/ShaderDev/shaders/noop_comp.spv");
+        QFile file("/home/till/ShaderDev/shaders/noop_comp.spv");
         if (!file.open(QIODevice::ReadOnly)) {
             qWarning("Failed to read shader.");
             return VK_NULL_HANDLE;
