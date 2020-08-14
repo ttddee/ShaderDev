@@ -6,7 +6,7 @@ CONFIG += c++14
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-QMAKE_CXXFLAGS_DEBUG += /MD
+#QMAKE_CXXFLAGS_DEBUG += /MD
 
 #------------------------------- Versioning
 
@@ -49,6 +49,8 @@ FORMS += \
     controlswidget.ui \
     mainwindow.ui
 
+win32-msvc* {
+
 CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD
 CONFIG(release, debug|release): DESTDIR = $$OUT_PWD
 
@@ -66,7 +68,27 @@ LIBS += -L$$PWD/../external/SpvShaderCompiler/lib -lOSDependent
 LIBS += -L$$PWD/../external/SpvShaderCompiler/lib -lSPIRV
 LIBS += -L$$PWD/../external/SpvShaderCompiler/lib -lSPVRemapper
 
+}
+
+linux-g++ {
+
+# Includes
+INCLUDEPATH += $$PWD/../external/linux/SpvShaderCompiler/include
+
+# Libs
+LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lSpvShaderCompiler
+LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lglslang
+LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lHLSL
+LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lMachineIndependent
+LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lOGLCompiler
+LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lOSDependent
+LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lSPIRV
+LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lSPVRemapper
+LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lGenericCodeGen
+
+}
+
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+#qnx: target.path = /tmp/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+#!isEmpty(target.path): INSTALLS += target
