@@ -6,21 +6,25 @@
 
 #include <SpvShaderCompiler.h>
 
+#include "globals.h"
+
+using namespace ShaderDev;
+
 class CodeEdit : public QTextEdit
 {
     Q_OBJECT
 
 public:
     CodeEdit(QWidget *parent = nullptr);
+    ShaderCode spirV;
 
 private:
     SpvCompiler compiler;
     std::string code;
-    std::vector<unsigned int> spirV;
 
 signals:
     void requestErrorMessageUpdate(const std::string&);
-    void shaderCompiledSuccessfully(const std::vector<unsigned int>&);
+    void shaderCompiledSuccessfully();
 
 private slots:
     void handleCodeHasChanged();

@@ -40,6 +40,7 @@ VulkanRenderer::VulkanRenderer(VulkanWindow *w)
 {
     concurrentFrameCount = window->concurrentFrameCount();
 
+    qDebug("CREATING RENDERER");
 
 }
 
@@ -77,6 +78,8 @@ void VulkanRenderer::initResources()
     createComputeCommandBuffer();
 
     recordComputeCommandBuffer();
+
+    //window->acceptRendererHasInitialized();
 }
 
 QString VulkanRenderer::getGpuName()
@@ -1289,18 +1292,27 @@ void VulkanRenderer::updateImage(const QString& path)
     imagePath = "path";
 }
 
-void VulkanRenderer::updateShader(const std::vector<unsigned int> &code)
+void VulkanRenderer::updateShader(const ShaderCode& code)
 {
+    qDebug("Shader code: ");
+    qDebug() << code;
+    qDebug("New size: ");
+    qDebug() << code.size();
+
     shaderCode = code;
 
+    //shaderCode.resize(code.size());
+    //shaderCode = std::make_unique<ShaderCode>(code.size());
+    //shaderCode = code;
+
     std::cout << "createComputeDescriptors" << std::endl;
-    createComputeDescriptors();
+    //createComputeDescriptors();
     std::cout << "createCommandBuffer" << std::endl;
-    createComputeCommandBuffer();
+    //createComputeCommandBuffer();
     std::cout << "createPipeline" << std::endl;
-    createComputePipeline();
+    //createComputePipeline();
     std::cout << "recordCommandBuffer" << std::endl;
-    recordComputeCommandBuffer();
+    //recordComputeCommandBuffer();
 
     //startNextFrame();
 }
@@ -1507,4 +1519,9 @@ void VulkanRenderer::releaseResources()
         devFuncs->vkFreeCommandBuffers(device, compute.commandPool, 2, &buffers[0]);
         devFuncs->vkDestroyCommandPool(device, compute.commandPool, nullptr);
     }
+}
+
+VulkanRenderer::~VulkanRenderer()
+{
+    qDebug("------------------> Destroying VulkanRenderer");
 }

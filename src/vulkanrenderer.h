@@ -6,12 +6,17 @@
 #include <QVulkanWindow>
 #include <QImage>
 
+#include "globals.h"
+
+using namespace ShaderDev;
+
 class VulkanWindow;
 
 class VulkanRenderer : public QVulkanWindowRenderer
 {
 public:
     VulkanRenderer(VulkanWindow *w);
+    ~VulkanRenderer();
 
     // Initialize
     void initResources() override;
@@ -22,7 +27,7 @@ public:
     void startNextFrame() override;
 
     void updateImage(const QString& path);
-    void updateShader(const std::vector<unsigned int>& code);
+    void updateShader(const ShaderCode& code);
 
     void translate(float dx, float dy);
     void scale(float s);
@@ -76,7 +81,7 @@ private:
 
     void updateVertexData(int, int);
 
-    std::vector<unsigned int> shaderCode;
+    ShaderCode shaderCode;
 
     VkDeviceMemory bufMem = VK_NULL_HANDLE;
     VkBuffer buf = VK_NULL_HANDLE;

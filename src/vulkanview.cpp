@@ -8,7 +8,6 @@ VulkanView::VulkanView(QWidget *parent) : QWidget(parent)
 {
     qDebug("Creating Vulkan instance");
 
-
     // TODO: Uncomment this!
     // Set up validation layers
 //#ifdef QT_DEBUG

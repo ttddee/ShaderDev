@@ -25,7 +25,6 @@ void ControlsWidget::handleLoadImageButtonClicked()
     dialog.setNameFilter(tr("Images (*.jpg *.png)"));
     dialog.setViewMode(QFileDialog::Detail);
     dialog.setDirectory(QCoreApplication::applicationDirPath());
-    //dialog.setOption(QFileDialog::DontUseNativeDialog);
     if (dialog.exec())
     {
         auto files = dialog.selectedFiles();

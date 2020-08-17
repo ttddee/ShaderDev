@@ -9,17 +9,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     highlighter = new SyntaxHighlighter(ui->codeEdit->document());
 
-    wManager = &WindowManager::getInstance();
-    wManager->setUp(this,
-                    ui->controlsWidget,
-                    ui->vulkanWidget->getVulkanWindow()->getRenderer(),
-                    ui->codeEdit,
-                    ui->outputEdit);
-
+    wManager = new WindowManager(this,
+                             ui->controlsWidget,
+                             ui->vulkanWidget->getVulkanWindow(),
+                             ui->codeEdit,
+                             ui->outputEdit);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete wManager;
 }
 

@@ -18,10 +18,11 @@ void CodeEdit::handleCodeHasChanged()
     if (compiler.compileGLSLFromCode(code.data(), "comp"))
     {
         std::cout << "valid" << std::endl;
+
         spirV = compiler.getSpirV();
-        //const uint32_t* c = compiler.getSpirV();
-        emit shaderCompiledSuccessfully(spirV);
+
         std::cout << "Shader compiled successfully." << std::endl;
+        emit shaderCompiledSuccessfully();
     }
     else
     {

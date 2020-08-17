@@ -14,16 +14,21 @@ public:
 
     VulkanRenderer* getRenderer();
 
+    //void acceptRendererHasInitialized();
+
 private:
     void mousePressEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
     void mouseMoveEvent(QMouseEvent *) override;
     void wheelEvent(QWheelEvent *) override;
 
-    VulkanRenderer *renderer;
+    VulkanRenderer* renderer;
     bool pressed = false;
     QPoint lastPos;
     float scale = 1.0f;
+
+//signals:
+//    void rendererHasInitialized(VulkanRenderer*);
 };
 
 #endif // VULKANWINDOW_H

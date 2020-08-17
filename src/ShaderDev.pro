@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++14
+CONFIG += c++17
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
@@ -37,6 +37,7 @@ SOURCES += \
 HEADERS += \
     codeedit.h \
     controlswidget.h \
+    globals.h \
     mainwindow.h \
     outputedit.h \
     syntaxhighlighter.h \

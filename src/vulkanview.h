@@ -17,8 +17,6 @@ private:
     VulkanWindow* vulkanWindow;
     QVulkanInstance instance;
 
-signals:
-
 };
 
 #endif // VULKANVIEW_H
