@@ -61,6 +61,7 @@ private:
     void createComputePipelineLayout();
     void createComputeQueue();
     void createComputeCommandPool();
+    void createQueryPool();
 
     // RECURRING
 
@@ -95,6 +96,7 @@ private:
     VkPipelineCache pipelineCache = VK_NULL_HANDLE;
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     VkPipeline pipeline = VK_NULL_HANDLE;
+    VkQueryPool queryPool = VK_NULL_HANDLE;
 
     VkSampler sampler = VK_NULL_HANDLE;
     VkFormat texFormat;

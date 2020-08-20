@@ -67,6 +67,7 @@ void VulkanRenderer::initResources()
     if (!createComputeRenderTarget(cpuImage.width(), cpuImage.height()))
         qFatal("Failed to create compute render target.");
 
+    createQueryPool();
     createComputeDescriptors();
     createComputePipelineLayout();
     createComputePipeline();
@@ -810,6 +811,19 @@ void VulkanRenderer::createComputeCommandPool()
         qFatal("Failed to create compute command pool: %d", err);
 }
 
+void VulkanRenderer::createQueryPool()
+{
+    VkQueryPoolCreateInfo queryPooloolInfo = {};
+    queryPooloolInfo.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+    queryPooloolInfo.pNext = nullptr;
+    queryPooloolInfo.queryType = VK_QUERY_TYPE_TIMESTAMP;
+    queryPooloolInfo.queryCount = 2;
+
+    VkResult err = devFuncs->vkCreateQueryPool(device, &queryPooloolInfo, nullptr, &queryPool);
+    if (err != VK_SUCCESS)
+        qFatal("Failed to create query pool: %d", err);
+}
+
 void VulkanRenderer::createComputeCommandBuffer()
 {
     // Create a command buffer for compute operations
@@ -1098,6 +1112,8 @@ void VulkanRenderer::recordComputeCommandBuffer()
     if (err != VK_SUCCESS)
         qFatal("Failed to begin command buffer: %d", err);
 
+    //devFuncs->vkCmdResetQueryPool(compute.commandBuffer, queryPool, 0 ,2);
+
      VkCommandBuffer cb = compute.commandBuffer;
 
      {
@@ -1329,8 +1345,7 @@ VkShaderModule VulkanRenderer::createShaderFromCode(const ShaderCode& code)
 
     if (shaderCode.size() == 0)
     {
-        std::cout << "Loading shader from file." << std::endl;
-        QFile file("/home/till/ShaderDev/shaders/noop_comp.spv");
+        QFile file(":/shaders/noop_comp.spv");
         if (!file.open(QIODevice::ReadOnly)) {
             qWarning("Failed to read shader.");
             return VK_NULL_HANDLE;
@@ -1357,8 +1372,6 @@ VkShaderModule VulkanRenderer::createShaderFromCode(const ShaderCode& code)
         auto codeChar = uintVecToCharVec(code); // TODO: Can we not do this?
 
         QByteArray codeArray = QByteArray(reinterpret_cast<const char*>(codeChar.data()), codeChar.size());
-
-        std::cout << "Loading shader from code." << std::endl;
 
         VkShaderModuleCreateInfo shaderInfo;
         memset(&shaderInfo, 0, sizeof(shaderInfo));
@@ -1403,12 +1416,9 @@ void VulkanRenderer::translate(float dx, float dy)
 
 void VulkanRenderer::scale(float s)
 {
-    qDebug("Setting scale");
     scaleXY = s;
     window->requestUpdate();
 }
-
-
 
 void VulkanRenderer::releaseSwapChainResources()
 {
@@ -1420,6 +1430,11 @@ void VulkanRenderer::releaseResources()
     qDebug("releaseResources");
 
     devFuncs->vkQueueWaitIdle(compute.queue);
+
+    if (queryPool) {
+        devFuncs->vkDestroyQueryPool(device, queryPool, nullptr);
+        queryPool = VK_NULL_HANDLE;
+    }
 
     if (sampler) {
         devFuncs->vkDestroySampler(device, sampler, nullptr);
