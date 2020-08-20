@@ -26,46 +26,10 @@ WindowManager::WindowManager(MainWindow* w, ControlsWidget* c, VulkanWindow* v, 
             this, &WindowManager::handleShaderCompiled);
 }
 
-//WindowManager& WindowManager::getInstance()
-//{
-//    static WindowManager instance;
-//    return instance;
-//}
-
-//void WindowManager::setUp(
-//        MainWindow* w,
-//        ControlsWidget* c,
-//        VulkanRenderer* r,
-//        CodeEdit* e,
-//        OutputEdit* oe)
-//{
-//    mainWindow = w;
-//    controlsWidget = c;
-//    vulkanRenderer = r;
-//    codeEdit = e;
-//    outputEdit = oe;
-
-//    // TODO: Call this when renderer is fully initialized
-//    //setGpuLabel(vulkanRenderer->getGpuName());
-
-//    connect(controlsWidget, &ControlsWidget::imagePathHasChanged,
-//            this, &WindowManager::handleImagePathHasChanged);
-//    connect(codeEdit, &CodeEdit::requestErrorMessageUpdate,
-//            this, &WindowManager::handleRequestErrorMessageUpdate);
-//    connect(codeEdit, &CodeEdit::shaderCompiledSuccessfully,
-//            this, &WindowManager::handleShaderCompiled);
-//}
-
 void WindowManager::setGpuLabel(const QString &s)
 {
     controlsWidget->setGpuLabel(s);
 }
-
-//void WindowManager::handleRendererHasInitialized(VulkanRenderer* r)
-//{
-//    vulkanRenderer = r;
-//    qDebug("Adding Renderer to WindowManager");
-//}
 
 void WindowManager::handleImagePathHasChanged(const QString& path)
 {

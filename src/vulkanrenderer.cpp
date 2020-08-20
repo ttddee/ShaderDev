@@ -7,9 +7,9 @@
 #include <QFile>
 #include <QVulkanFunctions>
 #include <QMouseEvent>
+#include <QVulkanWindowRenderer>
 
 #include "vulkanwindow.h"
-//#include "windowmanager.h"
 
 //////////////////////////////////////////////////
 // One time setup
@@ -78,8 +78,6 @@ void VulkanRenderer::initResources()
     createComputeCommandBuffer();
 
     recordComputeCommandBuffer();
-
-    //window->acceptRendererHasInitialized();
 }
 
 QString VulkanRenderer::getGpuName()
@@ -595,29 +593,32 @@ bool VulkanRenderer::createTexture(const QString &name)
 
 void VulkanRenderer::createComputeDescriptors()
 {
-    //Define the layout of the input of the shader.
-    //1 image to read, 1 image to write
-    VkDescriptorSetLayoutBinding bindings[2]= {};
+    if (computeDescriptorSetLayout == VK_NULL_HANDLE)
+    {
+        //Define the layout of the input of the shader.
+        //1 image to read, 1 image to write
+        VkDescriptorSetLayoutBinding bindings[2]= {};
 
-    bindings[0].binding         = 0;
-    bindings[0].descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-    bindings[0].descriptorCount = 1;
-    bindings[0].stageFlags      = VK_SHADER_STAGE_COMPUTE_BIT;
+        bindings[0].binding         = 0;
+        bindings[0].descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        bindings[0].descriptorCount = 1;
+        bindings[0].stageFlags      = VK_SHADER_STAGE_COMPUTE_BIT;
 
-    bindings[1].binding         = 1;
-    bindings[1].descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-    bindings[1].descriptorCount = 1;
-    bindings[1].stageFlags      = VK_SHADER_STAGE_COMPUTE_BIT;
+        bindings[1].binding         = 1;
+        bindings[1].descriptorType  = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        bindings[1].descriptorCount = 1;
+        bindings[1].stageFlags      = VK_SHADER_STAGE_COMPUTE_BIT;
 
-    VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo {};
-    descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    descriptorSetLayoutCreateInfo.pBindings = bindings;
-    descriptorSetLayoutCreateInfo.bindingCount = 2;
+        VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo {};
+        descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        descriptorSetLayoutCreateInfo.pBindings = bindings;
+        descriptorSetLayoutCreateInfo.bindingCount = 2;
 
-    //Create the layout, store it to share between shaders
-    VkResult err = devFuncs->vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &computeDescriptorSetLayout);
-    if (err != VK_SUCCESS)
-        qFatal("Failed to create compute descriptor set layout: %d", err);
+        //Create the layout, store it to share between shaders
+        VkResult err = devFuncs->vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &computeDescriptorSetLayout);
+        if (err != VK_SUCCESS)
+            qFatal("Failed to create compute descriptor set layout: %d", err);
+    }
 
     //Descriptor sets
     for (int i = 0; i < concurrentFrameCount; ++i)
@@ -742,13 +743,21 @@ void VulkanRenderer::createComputePipeline()
         };
 
     VkComputePipelineCreateInfo pipelineInfo = {};
+    //pipelineInfo.pNext = nullptr;
+    //pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.sType  = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
     pipelineInfo.stage  = computeStage;
     pipelineInfo.layout = computePipelineLayout;
 
+//    if ( computePipeline ) {
+//        devFuncs->vkDestroyPipeline(device, computePipeline, nullptr);
+//        computePipeline = VK_NULL_HANDLE;
+//    }
+
+    std::cout << "Attempting to create pipeline." << std::endl;
     VkResult err = devFuncs->vkCreateComputePipelines(device, pipelineCache, 1, &pipelineInfo, nullptr, &computePipeline);
     if (err != VK_SUCCESS)
-        qFatal("Failed to create graphics pipeline: %d", err);
+        qFatal("Failed to create compute pipeline: %d", err);
 
     if (computeShaderModule)
         devFuncs->vkDestroyShaderModule(device, computeShaderModule, nullptr);
@@ -1102,9 +1111,7 @@ void VulkanRenderer::recordComputeCommandBuffer()
     VkCommandBufferBeginInfo cmdBufferBeginInfo {};
     cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    VkResult err;
-
-    err = devFuncs->vkBeginCommandBuffer(compute.commandBuffer, &cmdBufferBeginInfo);
+    VkResult err = devFuncs->vkBeginCommandBuffer(compute.commandBuffer, &cmdBufferBeginInfo);
 
     if (err != VK_SUCCESS)
         qFatal("Failed to allocate descriptor set: %d", err);
@@ -1294,35 +1301,49 @@ void VulkanRenderer::updateImage(const QString& path)
 
 void VulkanRenderer::updateShader(const ShaderCode& code)
 {
-    qDebug("Shader code: ");
-    qDebug() << code;
-    qDebug("New size: ");
-    qDebug() << code.size();
+//    qDebug("Shader code: ");
+//    qDebug() << code;
+//    qDebug("New size: ");
+//    qDebug() << code.size();
 
     shaderCode = code;
-
-    //shaderCode.resize(code.size());
-    //shaderCode = std::make_unique<ShaderCode>(code.size());
-    //shaderCode = code;
 
     std::cout << "createComputeDescriptors" << std::endl;
     //createComputeDescriptors();
     std::cout << "createCommandBuffer" << std::endl;
-    //createComputeCommandBuffer();
+    createComputeCommandBuffer();
     std::cout << "createPipeline" << std::endl;
-    //createComputePipeline();
+    createComputePipeline();
     std::cout << "recordCommandBuffer" << std::endl;
-    //recordComputeCommandBuffer();
+    recordComputeCommandBuffer();
 
+
+    window->requestUpdate();
     //startNextFrame();
 }
 
-VkShaderModule VulkanRenderer::createShaderFromCode(const std::vector<unsigned int>& code)
+std::vector<char> uintVecToCharVec(const std::vector<unsigned int>& in)
+{
+    std::vector<char> out;
+
+    for (size_t i = 0; i < in.size(); i++)
+    {
+        out.push_back(in[i] >> 0);
+        out.push_back(in[i] >> 8);
+        out.push_back(in[i] >> 16);
+        out.push_back(in[i] >> 24);
+    }
+
+    return out;
+}
+
+VkShaderModule VulkanRenderer::createShaderFromCode(const ShaderCode& code)
 {
     // TODO: Refactor this!
 
     if (shaderCode.size() == 0)
     {
+        std::cout << "Loading shader from file." << std::endl;
         QFile file("/home/till/ShaderDev/shaders/noop_comp.spv");
         if (!file.open(QIODevice::ReadOnly)) {
             qWarning("Failed to read shader.");
@@ -1347,17 +1368,52 @@ VkShaderModule VulkanRenderer::createShaderFromCode(const std::vector<unsigned i
     }
     else
     {
+        QFile file("/home/till/ShaderDev/shaders/noop_comp.spv");
+        if (!file.open(QIODevice::ReadOnly)) {
+            qWarning("Failed to read shader.");
+            return VK_NULL_HANDLE;
+        }
+        QByteArray blob = file.readAll();
+        file.close();
+
+
+        qDebug() << code.data();
+
+        auto codeChar = uintVecToCharVec(code);
+
+        QByteArray codeArray = QByteArray(reinterpret_cast<const char*>(codeChar.data()), codeChar.size());
+
+        std::cout << "Code length: " << codeArray.size() << std::endl;
+        std::cout << "Loaded length: " << blob.size() << std::endl;
+
+        if (blob.constData() == codeArray.constData())
+        {
+            std::cout << "CODE IS EQUAL" << std::endl;
+        }
+        else
+        {
+            std::cout << "CODE DOES NOT MATCH" << std::endl;
+            std::cout << "Loaded:" << std::endl;
+            std::cout << blob.toStdString() << std::endl;
+            std::cout << "Compiled:" << std::endl;
+            std::cout << codeArray.toStdString() << std::endl;
+        }
+
+        qDebug() << blob.constData();
+
+        std::cout << "Loading shader from code." << std::endl;
         VkShaderModuleCreateInfo shaderInfo;
         memset(&shaderInfo, 0, sizeof(shaderInfo));
         shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        shaderInfo.codeSize = code.size();
-        shaderInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
+        shaderInfo.codeSize = codeArray.size();
+        shaderInfo.pCode = reinterpret_cast<const uint32_t *>(codeArray.constData()); //reinterpret_cast<const uint32_t *>(code.data());
         VkShaderModule shaderModule;
         VkResult err = devFuncs->vkCreateShaderModule(window->device(), &shaderInfo, nullptr, &shaderModule);
         if (err != VK_SUCCESS) {
             qWarning("Failed to create shader module: %d", err);
             return VK_NULL_HANDLE;
         }
+        //std::cout << err << std::endl;
 
         return shaderModule;
     }

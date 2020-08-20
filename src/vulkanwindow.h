@@ -14,8 +14,6 @@ public:
 
     VulkanRenderer* getRenderer();
 
-    //void acceptRendererHasInitialized();
-
 private:
     void mousePressEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
@@ -26,9 +24,6 @@ private:
     bool pressed = false;
     QPoint lastPos;
     float scale = 1.0f;
-
-//signals:
-//    void rendererHasInitialized(VulkanRenderer*);
 };
 
 #endif // VULKANWINDOW_H

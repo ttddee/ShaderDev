@@ -18,11 +18,6 @@ VulkanRenderer* VulkanWindow::getRenderer()
     return renderer;
 }
 
-//void VulkanWindow::acceptRendererHasInitialized()
-//{
-//    emit rendererHasInitialized(renderer);
-//}
-
 void VulkanWindow::mousePressEvent(QMouseEvent *e)
 {
     pressed = true;

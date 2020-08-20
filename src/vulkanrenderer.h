@@ -66,7 +66,7 @@ private:
 
     // Load shader
     VkShaderModule createShaderFromFile(const QString &name); // TODO: Take this out
-    VkShaderModule createShaderFromCode(const std::vector<unsigned int>& code);
+    VkShaderModule createShaderFromCode(const ShaderCode& code);
 
     bool createComputeRenderTarget( uint32_t width, uint32_t height);
 
