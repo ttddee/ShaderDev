@@ -71,6 +71,7 @@ private:
     bool createComputeRenderTarget( uint32_t width, uint32_t height);
 
     void createComputeDescriptors();
+    void updateComputeDescriptors();
     void createComputeCommandBuffer();
     void createComputePipeline();
     void recordComputeCommandBuffer();

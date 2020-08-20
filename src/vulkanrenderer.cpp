@@ -22,10 +22,10 @@
 // calculating the modelview-projection matrix.
 static float vertexData[] = { // Y up, front = CW
     // x, y, z, u, v
-    -2,  -2, 0, 0, 1,
-    -2,   2, 0, 0, 0,
-     2,  -2, 0, 1, 1,
-     2,   2, 0, 1, 0
+    -1,  -1, 0, 0, 1,
+    -1,   1, 0, 0, 0,
+     1,  -1, 0, 1, 1,
+     1,   1, 0, 1, 0
 };
 
 static const int UNIFORM_DATA_SIZE = 16 * sizeof(float);
@@ -39,9 +39,6 @@ VulkanRenderer::VulkanRenderer(VulkanWindow *w)
     : window(w)
 {
     concurrentFrameCount = window->concurrentFrameCount();
-
-    qDebug("CREATING RENDERER");
-
 }
 
 void VulkanRenderer::initResources()
@@ -87,8 +84,6 @@ QString VulkanRenderer::getGpuName()
     VkPhysicalDeviceProperties deviceProperties = {};
     f->vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
     auto deviceName = QString::fromLatin1(deviceProperties.deviceName);
-
-    qDebug() << deviceName;
 
     return deviceName;
 }
@@ -158,7 +153,7 @@ void VulkanRenderer::createSampler()
     samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
     samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
     samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    samplerInfo.maxAnisotropy = 1.0f;
+    samplerInfo.anisotropyEnable = VK_FALSE;
     VkResult err = devFuncs->vkCreateSampler(device, &samplerInfo, nullptr, &sampler);
     if (err != VK_SUCCESS)
         qFatal("Failed to create sampler: %d", err);
@@ -406,7 +401,7 @@ VkShaderModule VulkanRenderer::createShaderFromFile(const QString &name)
     return shaderModule;
 }
 
-bool VulkanRenderer::createComputeRenderTarget( uint32_t width, uint32_t height)
+bool VulkanRenderer::createComputeRenderTarget(uint32_t width, uint32_t height)
 {
     VkImageCreateInfo imageInfo = {};
 
@@ -440,7 +435,7 @@ bool VulkanRenderer::createComputeRenderTarget( uint32_t width, uint32_t height)
 
     //Todo: factor this out, now it is here only for completeness
     //Find a heap where to allocate the texture
-    //Texture reside in tiled memory for faster access
+    //Textures reside in tiled memory for faster access
 
     if (!(memReq.memoryTypeBits & (1 << memIndex))) {
         VkPhysicalDeviceMemoryProperties physDevMemProps;
@@ -523,7 +518,7 @@ bool VulkanRenderer::createTexture(const QString &name)
         return false;
     }
 
-    static bool alwaysStage = true;//Force usage accross the PCI bus
+    static bool alwaysStage = true; //Force usage accross the PCI bus
 
     if (canSampleLinear && !alwaysStage) {
         if (!createTextureImage(cpuImage.size(),
@@ -572,6 +567,8 @@ bool VulkanRenderer::createTexture(const QString &name)
         return false;
     }
 
+    std::cout << "Created new image view with width: " << cpuImage.width() << std::endl;
+
     texSize = cpuImage.size();
 
     return true;
@@ -579,7 +576,7 @@ bool VulkanRenderer::createTexture(const QString &name)
 
 void VulkanRenderer::createComputeDescriptors()
 {
-    if (computeDescriptorSetLayout == VK_NULL_HANDLE)
+    if (computeDescriptorSetLayout == VK_NULL_HANDLE) // TODO: Not needed?
     {
         //Define the layout of the input of the shader.
         //1 image to read, 1 image to write
@@ -620,6 +617,27 @@ void VulkanRenderer::createComputeDescriptors()
         if (err != VK_SUCCESS)
             qFatal("Failed to allocate descriptor set: %d", err);
 
+        {
+            VkDescriptorSetAllocateInfo descSetAllocInfo = {
+                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+                nullptr,
+                descPool,
+                1,
+                &computeDescriptorSetLayout
+            };
+            VkResult err = devFuncs->vkAllocateDescriptorSets(device, &descSetAllocInfo, &computeDescriptorSet);
+            if (err != VK_SUCCESS)
+                qFatal("Failed to allocate descriptor set: %d", err);
+        }
+    }
+
+    updateComputeDescriptors();
+}
+
+void VulkanRenderer::updateComputeDescriptors()
+{
+    for (int i = 0; i < concurrentFrameCount; ++i)
+    {
         VkWriteDescriptorSet descWrite[2];
         memset(descWrite, 0, sizeof(descWrite));
         descWrite[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -645,20 +663,7 @@ void VulkanRenderer::createComputeDescriptors()
         devFuncs->vkUpdateDescriptorSets(device, 2, descWrite, 0, nullptr);
     }
 
-    //Now setup the descriptors
-    //Issue two copy commands which will make the gpu pointers
     {
-        VkDescriptorSetAllocateInfo descSetAllocInfo = {
-            VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-            nullptr,
-            descPool,
-            1,
-            &computeDescriptorSetLayout
-        };
-        VkResult err = devFuncs->vkAllocateDescriptorSets(device, &descSetAllocInfo, &computeDescriptorSet);
-        if (err != VK_SUCCESS)
-            qFatal("Failed to allocate descriptor set: %d", err);
-
 
         VkDescriptorImageInfo destinationInfo = { };
         destinationInfo.imageView             = computeRenderTargetView;
@@ -735,12 +740,6 @@ void VulkanRenderer::createComputePipeline()
     pipelineInfo.stage  = computeStage;
     pipelineInfo.layout = computePipelineLayout;
 
-//    if ( computePipeline ) {
-//        devFuncs->vkDestroyPipeline(device, computePipeline, nullptr);
-//        computePipeline = VK_NULL_HANDLE;
-//    }
-
-    std::cout << "Attempting to create pipeline." << std::endl;
     VkResult err = devFuncs->vkCreateComputePipelines(device, pipelineCache, 1, &pipelineInfo, nullptr, &computePipeline);
     if (err != VK_SUCCESS)
         qFatal("Failed to create compute pipeline: %d", err);
@@ -921,8 +920,6 @@ void VulkanRenderer::createComputeCommandBuffer()
                                 1, &barrier);
     }
 
-    //devFuncs->vkCmdPushConstants(compute.commandBuffer, computePipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof (pushConstants), pushConstants.data());
-
     devFuncs->vkCmdBindPipeline(compute.commandBufferInit, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline);
     devFuncs->vkCmdBindDescriptorSets(compute.commandBufferInit, VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 1, &computeDescriptorSet, 0, 0);
     devFuncs->vkCmdDispatch(compute.commandBufferInit, cpuImage.width() / 16, cpuImage.height() / 16, 1);
@@ -1088,7 +1085,7 @@ void VulkanRenderer::initSwapChainResources()
 
 void VulkanRenderer::recordComputeCommandBuffer()
 {
-    // Records the compute command buffer for using the texture image and sends push constants
+    // Records the compute command buffer for using the texture image
     // Needs the right render target
 
     // Flush the queue if we're rebuilding the command buffer after a pipeline change to ensure it's not currently in use
@@ -1098,9 +1095,8 @@ void VulkanRenderer::recordComputeCommandBuffer()
     cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
     VkResult err = devFuncs->vkBeginCommandBuffer(compute.commandBuffer, &cmdBufferBeginInfo);
-
     if (err != VK_SUCCESS)
-        qFatal("Failed to allocate descriptor set: %d", err);
+        qFatal("Failed to begin command buffer: %d", err);
 
      VkCommandBuffer cb = compute.commandBuffer;
 
@@ -1134,8 +1130,6 @@ void VulkanRenderer::recordComputeCommandBuffer()
                                 0, 0, nullptr, 0, nullptr,
                                 2, &barrier[0]);
      }
-
-    //devFuncs->vkCmdPushConstants(compute.commandBuffer, computePipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof (pushConstants), pushConstants.data());
 
     devFuncs->vkCmdBindPipeline(compute.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline);
     devFuncs->vkCmdBindDescriptorSets(compute.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 1, &computeDescriptorSet, 0, 0);
@@ -1259,8 +1253,9 @@ void VulkanRenderer::submitComputeCommands()
     devFuncs->vkResetFences(device, 1, &compute.fence);
 
     //Do the copy on the compute queue
-    if (texStagingPending )
+    if (texStagingPending)
     {
+        std::cout << "texStagingPending = true" << std::endl;
         texStagingPending = false;
         VkSubmitInfo computeSubmitInfo {};
         computeSubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -1270,6 +1265,7 @@ void VulkanRenderer::submitComputeCommands()
     }
     else
     {
+        std::cout << "texStagingPending = false" << std::endl;
         VkSubmitInfo computeSubmitInfo {};
         computeSubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         computeSubmitInfo.commandBufferCount = 1;
@@ -1280,24 +1276,32 @@ void VulkanRenderer::submitComputeCommands()
 
 void VulkanRenderer::updateImage(const QString& path)
 {
-    qDebug(path.toLatin1());
-    qDebug("Update image");
-    imagePath = "path";
+    imagePath = path;
+
+    // Create texture
+    if (!createTexture(imagePath))
+        qFatal("Failed to create texture");
+
+    // Create render target
+    if (!createComputeRenderTarget(cpuImage.width(), cpuImage.height()))
+        qFatal("Failed to create compute render target.");
+
+    updateComputeDescriptors();
+
+    createComputeCommandBuffer();
+    recordComputeCommandBuffer();
+
+    window->requestUpdate();
 }
 
 void VulkanRenderer::updateShader(const ShaderCode& code)
 {
     shaderCode = code;
 
-    //std::cout << "createComputeDescriptors" << std::endl;
-    //createComputeDescriptors();
-    std::cout << "createCommandBuffer" << std::endl;
-    createComputeCommandBuffer();
     std::cout << "createPipeline" << std::endl;
     createComputePipeline();
     std::cout << "recordCommandBuffer" << std::endl;
     recordComputeCommandBuffer();
-
 
     window->requestUpdate();
 }

@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
                              ui->vulkanWidget->getVulkanWindow(),
                              ui->codeEdit,
                              ui->outputEdit);
+
+
 }
 
 MainWindow::~MainWindow()
