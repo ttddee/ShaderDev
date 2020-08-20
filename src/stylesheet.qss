@@ -1,0 +1,52 @@
+/*
+BGDark: #181b1e
+BGMid: #1d2024
+BGLight: #282d31
+BGHover: #626971
+Red: #dc4c46
+RedHover: #e8514b
+Green: #9bcf43
+GreenHover: #a4da47
+Blue: #00b6dd
+BlueHover: #01c0e9
+FGDark: #9299a1
+FGLight: #f1f1f1
+*/
+
+QWidget {
+    background-color: #1d2024;
+    color: #f1f1f1;
+    font-size: 13px;
+}
+
+QTextEdit {
+    background-color: #282d31;
+    color: #f1f1f1;
+}
+
+ControlsWidget {
+    background-color: #282d31;
+    color: #f1f1f1;
+}
+
+/*Horizontal and Vertical Lines*/
+QFrame[frameShape="4"],
+QFrame[frameShape="5"] {
+    background-color: #9299a1;
+}
+
+QPushButton {
+    background-color: #282d31;
+    color: #f1f1f1;
+    border: none;
+    border-radius: 3px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #626971;
+}
+QPushButton:disabled {
+    color: #9299a1;
+    background-color: #1d2024;
+}
+

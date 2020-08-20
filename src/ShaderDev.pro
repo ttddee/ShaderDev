@@ -51,7 +51,8 @@ FORMS += \
     mainwindow.ui
 
 RESOURCES += \
-    shaders.qrc
+    shaders.qrc \
+    style.qrc
 
 win32-msvc* {
 
@@ -96,5 +97,8 @@ LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lGenericCodeGen
 #qnx: target.path = /tmp/$${TARGET}/bin
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 #!isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    stylesheet.qss
 
 

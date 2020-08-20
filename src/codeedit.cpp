@@ -17,8 +17,6 @@ void CodeEdit::handleCodeHasChanged()
 
     if (compiler.compileGLSLFromCode(code.data(), "comp"))
     {
-        std::cout << "valid" << std::endl;
-
         spirV = compiler.getSpirV();
 
         std::cout << "Shader compiled successfully." << std::endl;
@@ -28,6 +26,7 @@ void CodeEdit::handleCodeHasChanged()
     {
         std::cout << "NOT valid" << std::endl;
         std::cout << compiler.getError() << std::endl;
+
     }
     emit requestErrorMessageUpdate(compiler.getError());
 }

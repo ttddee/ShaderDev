@@ -15,9 +15,8 @@ WindowManager::WindowManager(MainWindow* w, ControlsWidget* c, VulkanWindow* v, 
 
     qDebug("Initializing WindowManager");
 
-    // TODO: Call this when renderer is fully initialized
-    //setGpuLabel(vulkanRenderer->getGpuName());
-
+    connect(vulkanWindow, &VulkanWindow::rendererHasBeenCreated,
+            this, &WindowManager::handleRendererHasBeenCreated);
     connect(controlsWidget, &ControlsWidget::imagePathHasChanged,
             this, &WindowManager::handleImagePathHasChanged);
     connect(codeEdit, &CodeEdit::requestErrorMessageUpdate,
@@ -26,9 +25,9 @@ WindowManager::WindowManager(MainWindow* w, ControlsWidget* c, VulkanWindow* v, 
             this, &WindowManager::handleShaderCompiled);
 }
 
-void WindowManager::setGpuLabel(const QString &s)
+void WindowManager::handleRendererHasBeenCreated()
 {
-    controlsWidget->setGpuLabel(s);
+    controlsWidget->setGpuLabel(vulkanWindow->getRenderer()->getGpuName());
 }
 
 void WindowManager::handleImagePathHasChanged(const QString& path)
@@ -43,7 +42,5 @@ void WindowManager::handleRequestErrorMessageUpdate(const std::string& msg)
 
 void WindowManager::handleShaderCompiled()
 {
-    //code = c;
-    std::cout << "Sending shader code to Vulkan" << std::endl;
     vulkanWindow->getRenderer()->updateShader(codeEdit->spirV);
 }

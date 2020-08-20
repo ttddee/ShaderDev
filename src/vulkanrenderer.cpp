@@ -78,6 +78,8 @@ void VulkanRenderer::initResources()
     createComputeCommandBuffer();
 
     recordComputeCommandBuffer();
+
+    emit window->rendererHasBeenCreated();
 }
 
 QString VulkanRenderer::getGpuName()
@@ -494,12 +496,6 @@ bool VulkanRenderer::createComputeRenderTarget( uint32_t width, uint32_t height)
 
 bool VulkanRenderer::createTexture(const QString &name)
 {
-    //std::shared_ptr<ImageBuf> inputImage (new ImageBuf(name.toStdString()));
-    //bool ok = inputImage->read(0, 0, 0, 3, false, TypeDesc::FLOAT);
-
-    //auto tmp = std::shared_ptr<ImageBuf>(new ImageBuf(name.toStdString(), TypeDesc::INT8));
-    //m_cpuImage->read(0, 0, true);
-
     cpuImage = QImage(name);
     if (cpuImage.isNull()) {
         qWarning("Failed to load image %s", qPrintable(name));
@@ -512,18 +508,8 @@ bool VulkanRenderer::createTexture(const QString &name)
     // Note: This is not good to be done on the cpu
     cpuImage = cpuImage.convertToFormat(QImage::Format_RGBA8888_Premultiplied);
 
-    //const bool srgb = QCoreApplication::arguments().contains(QStringLiteral("--srgb"));
-    //if (srgb)
-    //    qDebug("sRGB swapchain was requested, making texture sRGB too");
-
-    //texFormat = srgb ? VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM;
-
     // Set to sRGB
-    texFormat = VK_FORMAT_R8G8B8A8_UNORM;
-
-//    QSize imSize(m_cpuImage.width(), m_cpuImage.height());
-//    int imWidth = m_cpuImage.width();
-//    int imHeight = m_cpuImage.height();
+    texFormat = VK_FORMAT_R8G8B8A8_SRGB;
 
     // Now we can either map and copy the image data directly, or have to go
     // through a staging buffer to copy and convert into the internal optimal
@@ -1195,7 +1181,7 @@ void VulkanRenderer::createRenderPass()
     const QSize sz = window->swapChainImageSize();
 
     // Clear background
-    VkClearColorValue clearColor = {{ 0.1f, 0.1f, 0.1f, 1.0f }};
+    VkClearColorValue clearColor = {{ 0.0f, 0.0f, 0.0f, 1.0f }};
     VkClearDepthStencilValue clearDS = { 1, 0 };
     VkClearValue clearValues[2];
     memset(clearValues, 0, sizeof(clearValues));
@@ -1301,14 +1287,9 @@ void VulkanRenderer::updateImage(const QString& path)
 
 void VulkanRenderer::updateShader(const ShaderCode& code)
 {
-//    qDebug("Shader code: ");
-//    qDebug() << code;
-//    qDebug("New size: ");
-//    qDebug() << code.size();
-
     shaderCode = code;
 
-    std::cout << "createComputeDescriptors" << std::endl;
+    //std::cout << "createComputeDescriptors" << std::endl;
     //createComputeDescriptors();
     std::cout << "createCommandBuffer" << std::endl;
     createComputeCommandBuffer();
@@ -1319,7 +1300,6 @@ void VulkanRenderer::updateShader(const ShaderCode& code)
 
 
     window->requestUpdate();
-    //startNextFrame();
 }
 
 std::vector<char> uintVecToCharVec(const std::vector<unsigned int>& in)
@@ -1340,6 +1320,8 @@ std::vector<char> uintVecToCharVec(const std::vector<unsigned int>& in)
 VkShaderModule VulkanRenderer::createShaderFromCode(const ShaderCode& code)
 {
     // TODO: Refactor this!
+    // If this receives empty shader code we go ahead and read the NOOP shader from disk and continue rendering.
+    // Pretty bad, needs to be changed.
 
     if (shaderCode.size() == 0)
     {
@@ -1368,40 +1350,12 @@ VkShaderModule VulkanRenderer::createShaderFromCode(const ShaderCode& code)
     }
     else
     {
-        QFile file("/home/till/ShaderDev/shaders/noop_comp.spv");
-        if (!file.open(QIODevice::ReadOnly)) {
-            qWarning("Failed to read shader.");
-            return VK_NULL_HANDLE;
-        }
-        QByteArray blob = file.readAll();
-        file.close();
-
-
-        qDebug() << code.data();
-
-        auto codeChar = uintVecToCharVec(code);
+        auto codeChar = uintVecToCharVec(code); // TODO: Can we not do this?
 
         QByteArray codeArray = QByteArray(reinterpret_cast<const char*>(codeChar.data()), codeChar.size());
 
-        std::cout << "Code length: " << codeArray.size() << std::endl;
-        std::cout << "Loaded length: " << blob.size() << std::endl;
-
-        if (blob.constData() == codeArray.constData())
-        {
-            std::cout << "CODE IS EQUAL" << std::endl;
-        }
-        else
-        {
-            std::cout << "CODE DOES NOT MATCH" << std::endl;
-            std::cout << "Loaded:" << std::endl;
-            std::cout << blob.toStdString() << std::endl;
-            std::cout << "Compiled:" << std::endl;
-            std::cout << codeArray.toStdString() << std::endl;
-        }
-
-        qDebug() << blob.constData();
-
         std::cout << "Loading shader from code." << std::endl;
+
         VkShaderModuleCreateInfo shaderInfo;
         memset(&shaderInfo, 0, sizeof(shaderInfo));
         shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -1413,7 +1367,6 @@ VkShaderModule VulkanRenderer::createShaderFromCode(const ShaderCode& code)
             qWarning("Failed to create shader module: %d", err);
             return VK_NULL_HANDLE;
         }
-        //std::cout << err << std::endl;
 
         return shaderModule;
     }

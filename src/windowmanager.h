@@ -17,8 +17,6 @@ class WindowManager : public QObject
 public:
     WindowManager(MainWindow* w, ControlsWidget* c, VulkanWindow* v, CodeEdit* e, OutputEdit* oe);
 
-    void setGpuLabel(const QString& s);
-
 private:
     MainWindow* mainWindow;
     ControlsWidget* controlsWidget;
@@ -27,6 +25,7 @@ private:
     OutputEdit* outputEdit;
 
 public slots:
+    void handleRendererHasBeenCreated();
     void handleImagePathHasChanged(const QString& path);
     void handleRequestErrorMessageUpdate(const std::string& msg);
     void handleShaderCompiled();

@@ -9,6 +9,8 @@ class VulkanRenderer;
 
 class VulkanWindow : public QVulkanWindow
 {
+    Q_OBJECT
+
 public:
     QVulkanWindowRenderer *createRenderer() override;
 
@@ -24,6 +26,10 @@ private:
     bool pressed = false;
     QPoint lastPos;
     float scale = 1.0f;
+
+signals:
+    void rendererHasBeenCreated();
+
 };
 
 #endif // VULKANWINDOW_H

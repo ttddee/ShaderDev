@@ -8,16 +8,15 @@ VulkanView::VulkanView(QWidget *parent) : QWidget(parent)
 {
     qDebug("Creating Vulkan instance");
 
-    // TODO: Uncomment this!
     // Set up validation layers
-//#ifdef QT_DEBUG
+#ifdef QT_DEBUG
     instance.setLayers(QByteArrayList()
                        << "VK_LAYER_LUNARG_parameter_validation"
                        << "VK_LAYER_LUNARG_object_tracker"
                        << "VK_LAYER_LUNARG_core_validation"
                        << "VK_LAYER_LUNARG_image"
                        << "VK_LAYER_LUNARG_swapchain");
-//#endif
+#endif
 
     if (!instance.create())
         qFatal("Failed to create Vulkan instance: %d", instance.errorCode());
