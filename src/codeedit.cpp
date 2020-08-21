@@ -11,7 +11,6 @@ CodeEdit::CodeEdit(QWidget *parent)
 
 void CodeEdit::handleCodeHasChanged()
 {
-    std::cout << "handleCodeHasChanged" << std::endl;
     code.clear();
     code.append(this->document()->toPlainText().toStdString());
 
@@ -19,12 +18,11 @@ void CodeEdit::handleCodeHasChanged()
     {
         spirV = compiler.getSpirV();
 
-        std::cout << "Shader compiled successfully." << std::endl;
         emit shaderCompiledSuccessfully();
     }
     else
     {
-        std::cout << "NOT valid" << std::endl;
+        std::cout << "Shader is not valid: " << std::endl;
         std::cout << compiler.getError() << std::endl;
 
     }
