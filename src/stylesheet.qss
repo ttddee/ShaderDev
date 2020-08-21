@@ -19,7 +19,7 @@ QWidget {
     font-size: 13px;
 }
 
-QTextEdit {
+QPlainTextEdit {
     background-color: #282d31;
     color: #f1f1f1;
 }
@@ -49,4 +49,30 @@ QPushButton:disabled {
     color: #9299a1;
     background-color: #1d2024;
 }
+
+QScrollBar:vertical {
+    border: 0px;
+    background: #1d2024;
+}
+QScrollBar::handle:vertical {
+    background: #626971;
+}
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+     border: 0px;
+     background: none;
+     color: none;
+ }
+ QScrollBar::add-line:vertical {
+       border: none;
+       background: none;
+ }
+ QScrollBar::sub-line:vertical {
+       border: none;
+       background: none;
+ }
+
+LineNumberArea {
+    font-weight: bold;
+}
+
 

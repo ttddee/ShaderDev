@@ -25,6 +25,7 @@ VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 SOURCES += \
     codeedit.cpp \
     controlswidget.cpp \
+    linenumberarea.cpp \
     main.cpp \
     mainwindow.cpp \
     outputedit.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     codeedit.h \
     controlswidget.h \
     globals.h \
+    linenumberarea.h \
     mainwindow.h \
     outputedit.h \
     syntaxhighlighter.h \

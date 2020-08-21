@@ -2,7 +2,7 @@
 #define CODEEDIT_H
 
 #include <QObject>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 
 #include <SpvShaderCompiler.h>
 
@@ -10,17 +10,24 @@
 
 using namespace ShaderDev;
 
-class CodeEdit : public QTextEdit
+class CodeEdit : public QPlainTextEdit
 {
     Q_OBJECT
 
 public:
     CodeEdit(QWidget *parent = nullptr);
+    void lineNumberAreaPaintEvent(QPaintEvent *event);
+    int lineNumberAreaWidth();
+
     ShaderCode spirV;
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     SpvCompiler compiler;
     std::string code;
+    QWidget *lineNumberArea;
 
 signals:
     void requestErrorMessageUpdate(const std::string&);
@@ -28,6 +35,9 @@ signals:
 
 private slots:
     void handleCodeHasChanged();
+    void updateLineNumberAreaWidth(int newBlockCount);
+    void highlightCurrentLine();
+    void updateLineNumberArea(const QRect &rect, int dy);
 };
 
 #endif // CODEEDIT_H
