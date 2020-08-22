@@ -6,8 +6,6 @@ CONFIG += c++17
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-#QMAKE_CXXFLAGS_DEBUG += /MD
-
 #------------------------------- Versioning
 
 VERSION_MAJOR = 0
@@ -56,6 +54,9 @@ RESOURCES += \
     shaders.qrc \
     style.qrc
 
+DISTFILES += \
+    stylesheet.qss
+
 win32-msvc* {
 
 CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD
@@ -95,12 +96,5 @@ LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lGenericCodeGen
 
 }
 
-# Default rules for deployment.
-#qnx: target.path = /tmp/$${TARGET}/bin
-#else: unix:!android: target.path = /opt/$${TARGET}/bin
-#!isEmpty(target.path): INSTALLS += target
-
-DISTFILES += \
-    stylesheet.qss
 
 
