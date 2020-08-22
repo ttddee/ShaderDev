@@ -29,6 +29,7 @@ private:
     std::string code;
     QWidget *lineNumberArea;
 
+
 signals:
     void requestErrorMessageUpdate(const std::string&);
     void shaderCompiledSuccessfully();

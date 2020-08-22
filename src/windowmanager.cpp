@@ -19,10 +19,14 @@ WindowManager::WindowManager(MainWindow* w, ControlsWidget* c, VulkanWindow* v, 
             this, &WindowManager::handleRendererHasBeenCreated);
     connect(controlsWidget, &ControlsWidget::imagePathHasChanged,
             this, &WindowManager::handleImagePathHasChanged);
+    connect(controlsWidget, &ControlsWidget::shaderWasLoaded,
+            this, &WindowManager::handleShaderWasLoaded);
     connect(codeEdit, &CodeEdit::requestErrorMessageUpdate,
             this, &WindowManager::handleRequestErrorMessageUpdate);
     connect(codeEdit, &CodeEdit::shaderCompiledSuccessfully,
             this, &WindowManager::handleShaderCompiled);
+    connect(codeEdit, &CodeEdit::textChanged,
+            controlsWidget, &ControlsWidget::handleCodeHasChanged);
 }
 
 void WindowManager::handleRendererHasBeenCreated()
@@ -33,6 +37,23 @@ void WindowManager::handleRendererHasBeenCreated()
 void WindowManager::handleImagePathHasChanged(const QString& path)
 {
     vulkanWindow->getRenderer()->updateImage(path);
+}
+
+void WindowManager::handleShaderWasLoaded(const QString& path)
+{
+    QFile f(path);
+    if (!f.open((QFile::ReadOnly | QFile::Text)))
+    {
+        qWarning("Failed to open file.");
+    }
+
+    QTextStream in (&f);
+    auto t = in.readAll();
+
+    codeEdit->blockSignals(true);
+    codeEdit->setPlainText(t);
+    codeEdit->update();
+    codeEdit->blockSignals(false);
 }
 
 void WindowManager::handleRequestErrorMessageUpdate(const std::string& msg)

@@ -20,12 +20,18 @@ public:
 private:
     Ui::ControlsWidget *ui;
     QString imagePath;
+    QString shaderPath;
+    bool fileIsDirty = false;
+    QString fileName;
 
 signals:
     void imagePathHasChanged(const QString& path);
+    void shaderWasLoaded(const QString& path);
 
 public slots:
     void handleLoadImageButtonClicked();
+    void handleLoadShaderButtonClicked();
+    void handleCodeHasChanged();
 };
 
 #endif // CONTROLSWIDGET_H

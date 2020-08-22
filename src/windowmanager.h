@@ -27,6 +27,7 @@ private:
 public slots:
     void handleRendererHasBeenCreated();
     void handleImagePathHasChanged(const QString& path);
+    void handleShaderWasLoaded(const QString& path);
     void handleRequestErrorMessageUpdate(const std::string& msg);
     void handleShaderCompiled();
 
