@@ -16,21 +16,24 @@ public:
     ~ControlsWidget();
 
     void setGpuLabel(const QString& s);
+    void handleFileHasBeenSaved(const QString& path);
 
 private:
     Ui::ControlsWidget *ui;
     QString imagePath;
     QString shaderPath;
-    bool fileIsDirty = false;
     QString fileName;
+    bool fileIsDirty = false;
 
 signals:
     void imagePathHasChanged(const QString& path);
-    void shaderWasLoaded(const QString& path);
+    void requestFileLoading(const QString& path);
+    void requestFileSaving(const QString& path);
 
 public slots:
     void handleLoadImageButtonClicked();
     void handleLoadShaderButtonClicked();
+    void handleSaveShaderButtonClicked();
     void handleCodeHasChanged();
 };
 
