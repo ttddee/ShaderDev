@@ -37,26 +37,9 @@ void VulkanWindow::mouseMoveEvent(QMouseEvent *e)
     float dx        = e->pos().x() - lastPos.x();
     float dy        = e->pos().y() - lastPos.y();
     float magnitude = std::max(abs(dx),abs(dy));
-    //float trigger   = 3.0f;
 
     if (  magnitude > 0.0f )
     {
-        //Lock here if you want only 1 axis
-        /*
-        if ( trigger * abs(dx) > abs(dy))
-        {
-            m_renderer->translate(dx, 0);
-        }
-        else if (  abs(dx) < trigger * abs(dy) )
-        {
-            m_renderer->translate(0, dy);
-        }
-        else
-        {
-            //small movements filter out
-        }
-        */
-
         renderer->translate(dx, dy);
     }
 

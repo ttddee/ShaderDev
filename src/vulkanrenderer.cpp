@@ -11,15 +11,7 @@
 
 #include "vulkanwindow.h"
 
-//////////////////////////////////////////////////
-// One time setup
-
 // Use a triangle strip to get a quad.
-//
-// Note that the vertex data and the projection matrix assume OpenGL. With
-// Vulkan Y is negated in clip space and the near/far plane is at 0/1 instead
-// of -1/1. These will be corrected for by an extra transformation when
-// calculating the modelview-projection matrix.
 static float vertexData[] = { // Y up, front = CW
     // x, y, z, u, v
     -1,  -1, 0, 0, 1,
@@ -62,7 +54,6 @@ void VulkanRenderer::initResources()
     createGraphicsPipeline();
 
     //Compute
-
     // Create render target
     if (!createComputeRenderTarget(cpuImage.width(), cpuImage.height()))
         qFatal("Failed to create compute render target.");
@@ -235,7 +226,7 @@ void VulkanRenderer::createGraphicsPipelineLayout()
 
 void VulkanRenderer::createGraphicsPipeline()
 {
-    // Vertex and Fragment shader. These never change.
+    // Vertex and Fragment shader
     VkShaderModule vertShaderModule = createShaderFromFile(":/shaders/texture_vert.spv");
     VkShaderModule fragShaderModule = createShaderFromFile(":/shaders/texture_frag.spv");
 
@@ -420,7 +411,7 @@ bool VulkanRenderer::createComputeRenderTarget(uint32_t width, uint32_t height)
     imageInfo.sharingMode       = VK_SHARING_MODE_EXCLUSIVE;
     imageInfo.initialLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
 
-    //Create the opaque structure that will be references around later
+    //Create the opaque structure that will be referenced later
     VkResult err = devFuncs->vkCreateImage(device, &imageInfo, nullptr, &computeRenderTarget);
     if (err != VK_SUCCESS) {
         qWarning("Failed to create linear image for texture: %d", err);
@@ -433,10 +424,6 @@ bool VulkanRenderer::createComputeRenderTarget(uint32_t width, uint32_t height)
 
     //The render target will be on the gpu
     uint32_t memIndex = window->deviceLocalMemoryIndex();
-
-    //Todo: factor this out, now it is here only for completeness
-    //Find a heap where to allocate the texture
-    //Textures reside in tiled memory for faster access
 
     if (!(memReq.memoryTypeBits & (1 << memIndex))) {
         VkPhysicalDeviceMemoryProperties physDevMemProps;
@@ -462,7 +449,7 @@ bool VulkanRenderer::createComputeRenderTarget(uint32_t width, uint32_t height)
         return false;
     }
 
-    //Associate the image with this piece of memory
+    //Associate the image with this chunk of memory
     err = devFuncs->vkBindImageMemory(device, computeRenderTarget, computeRenderTargetMemory, 0);
     if (err != VK_SUCCESS) {
         qWarning("Failed to bind linear image memory: %d", err);
@@ -501,7 +488,6 @@ bool VulkanRenderer::createTexture(const QString &name)
     updateVertexData(cpuImage.width(), cpuImage.height());
 
     // Convert to byte ordered RGBA8. Use premultiplied alpha, see pColorBlendState in the pipeline.
-    // Note: This is not good to be done on the cpu
     cpuImage = cpuImage.convertToFormat(QImage::Format_RGBA8888_Premultiplied);
 
     // Set to sRGB
@@ -568,8 +554,6 @@ bool VulkanRenderer::createTexture(const QString &name)
         return false;
     }
 
-    std::cout << "Created new image view with width: " << cpuImage.width() << std::endl;
-
     texSize = cpuImage.size();
 
     return true;
@@ -577,10 +561,10 @@ bool VulkanRenderer::createTexture(const QString &name)
 
 void VulkanRenderer::createComputeDescriptors()
 {
-    if (computeDescriptorSetLayout == VK_NULL_HANDLE) // TODO: Not needed?
+    if (computeDescriptorSetLayout == VK_NULL_HANDLE)
     {
-        //Define the layout of the input of the shader.
-        //1 image to read, 1 image to write
+        // Define the layout of the input of the shader.
+        // 1 image to read, 1 image to write
         VkDescriptorSetLayoutBinding bindings[2]= {};
 
         bindings[0].binding         = 0;
@@ -695,20 +679,11 @@ void VulkanRenderer::updateComputeDescriptors()
 
 void VulkanRenderer::createComputePipelineLayout()
 {
-    // PUSH CONSTANTS HERE?
-//    VkPushConstantRange pushConstantRange;
-//    pushConstantRange.stageFlags                    = VK_SHADER_STAGE_COMPUTE_BIT;
-//    pushConstantRange.offset                        = 0;
-//    pushConstantRange.size                         = 0;
-
     //Now create the layout info
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &computeDescriptorSetLayout;
-    //pipelineLayoutInfo.pushConstantRangeCount = 0;
-    //pipelineLayoutInfo.pPushConstantRanges = nullptr;//&pushConstantRange;
-
 
     //Create the layout, store it to share between shaders
     VkResult err = devFuncs->vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &computePipelineLayout);
@@ -719,7 +694,6 @@ void VulkanRenderer::createComputePipelineLayout()
 void VulkanRenderer::createComputePipeline()
 {
     // Loads shader and creates a pipeline
-
     // Shaders
     VkShaderModule computeShaderModule = createShaderFromCode(shaderCode);
 
@@ -761,8 +735,6 @@ void VulkanRenderer::createComputeQueue()
 
     f->vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilyProperties.data());
 
-    // Some devices have dedicated compute queues, so we first try to find a queue that supports compute and not graphics
-    // Like AMD
     bool computeQueueFound = false;
     for (auto i = 0U; i < queueFamilyProperties.size(); ++i)
     {
@@ -774,7 +746,6 @@ void VulkanRenderer::createComputeQueue()
         }
     }
 
-    //Disabled and submit compute work only on the graphics queue, qt does not initialize in default.
     computeQueueFound = false;
 
     // If there is no dedicated compute queue, just find the first queue family that supports compute
@@ -865,7 +836,7 @@ void VulkanRenderer::createComputeCommandBuffer()
 
     VkCommandBuffer cb = compute.commandBufferInit;
 
-    //Make the barriers for the resources
+    // Make the barriers for the resources
     VkImageMemoryBarrier barrier = {};
     memset(&barrier, 0, sizeof(barrier));
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -937,7 +908,6 @@ void VulkanRenderer::createComputeCommandBuffer()
     devFuncs->vkCmdBindPipeline(compute.commandBufferInit, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline);
     devFuncs->vkCmdBindDescriptorSets(compute.commandBufferInit, VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 1, &computeDescriptorSet, 0, 0);
     devFuncs->vkCmdDispatch(compute.commandBufferInit, cpuImage.width() / 16, cpuImage.height() / 16, 1);
-
 
     {
        //Make the barriers for the resources
@@ -1051,18 +1021,6 @@ bool VulkanRenderer::writeLinearImage(const QImage &img, VkImage image, VkDevice
         return false;
     }
 
-//    int width = img.width();
-//    int height = img.height();
-    //uchar* pixel = static_cast<uchar*>(img->pixeladdr(0, 0));
-
-//    for (int i = 0; i < height; ++i)
-//        for (int j = 0; j < width; ++j)
-//        {
-//            memcpy(p, pixel, 4);
-//            pixel++;
-//            p++;
-//        }
-
     for (int y = 0; y < img.height(); ++y) {
         const uchar *line = img.constScanLine(y);
         memcpy(p, line, img.width() * 4);
@@ -1111,8 +1069,6 @@ void VulkanRenderer::recordComputeCommandBuffer()
     VkResult err = devFuncs->vkBeginCommandBuffer(compute.commandBuffer, &cmdBufferBeginInfo);
     if (err != VK_SUCCESS)
         qFatal("Failed to begin command buffer: %d", err);
-
-    //devFuncs->vkCmdResetQueryPool(compute.commandBuffer, queryPool, 0 ,2);
 
      VkCommandBuffer cb = compute.commandBuffer;
 
@@ -1219,7 +1175,6 @@ void VulkanRenderer::createRenderPass()
 
     QMatrix4x4 rotation;
     rotation.setToIdentity();
-    //rotation.rotate(rotation, 0, 0, 1); //not applied
 
     QMatrix4x4 translation;
     translation.setToIdentity();
@@ -1403,10 +1358,10 @@ void VulkanRenderer::startNextFrame()
 void VulkanRenderer::translate(float dx, float dy)
 {
     const QSize sz          = window->swapChainImageSize();
-    const float speed_x     = 4.f * abs(dx) / sz.width();       //normalize according to the window size
+    const float speed_x     = 4.f * abs(dx) / sz.width();       // normalize according to the window size
     const float speed_y     = 4.f * abs(dy) / sz.height();
     const float sign_dx     = dx  < 0.0f ? -1.0f : 1.0f;
-    const float sign_dy     = -dy < 0.0f ? -1.0f : 1.0f;        //invert y, it comes in window coordinate system
+    const float sign_dy     = -dy < 0.0f ? -1.0f : 1.0f;        // invert y, it comes in window coordinate system
 
     position_x            += sign_dx * speed_x;
     position_y            += sign_dy * speed_y;

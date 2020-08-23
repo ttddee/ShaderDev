@@ -62,10 +62,8 @@ win32-msvc* {
 CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD
 CONFIG(release, debug|release): DESTDIR = $$OUT_PWD
 
-# Includes
 INCLUDEPATH += $$PWD/../external/SpvShaderCompiler/include
 
-# Libs
 LIBS += -L$$PWD/../external/SpvShaderCompiler/lib -lSpvShaderCompiler
 LIBS += -L$$PWD/../external/SpvShaderCompiler/lib -lGenericCodeGen
 LIBS += -L$$PWD/../external/SpvShaderCompiler/lib -lglslang
@@ -80,10 +78,8 @@ LIBS += -L$$PWD/../external/SpvShaderCompiler/lib -lSPVRemapper
 
 linux-g++ {
 
-# Includes
 INCLUDEPATH += $$PWD/../external/linux/SpvShaderCompiler/include
 
-# Libs
 LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lSpvShaderCompiler
 LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lglslang
 LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lHLSL

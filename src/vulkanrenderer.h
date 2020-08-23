@@ -64,7 +64,6 @@ private:
     void createQueryPool();
 
     // RECURRING
-
     // Load shader
     VkShaderModule createShaderFromFile(const QString &name); // TODO: Take this out
     VkShaderModule createShaderFromCode(const ShaderCode& code);
