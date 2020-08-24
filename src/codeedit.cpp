@@ -21,6 +21,9 @@ CodeEdit::CodeEdit(QWidget *parent)
     connect(this, &CodeEdit::cursorPositionChanged,
             this, &CodeEdit::highlightCurrentLine);
 
+    // Set Tab key to four spaces
+    setTabStopDistance(QFontMetricsF(font()).horizontalAdvance(' ') * 4);
+
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 }

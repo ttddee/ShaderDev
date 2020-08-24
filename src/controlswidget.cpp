@@ -82,7 +82,10 @@ void ControlsWidget::handleSaveShaderButtonClicked()
 void ControlsWidget::handleCodeHasChanged()
 {
     fileIsDirty = true;
-    ui->fileNameLabel->setText(fileName + "*");
+    if(fileName.size() > 0)
+    {
+        ui->fileNameLabel->setText(fileName + "*");
+    }
 }
 
 ControlsWidget::~ControlsWidget()

@@ -1226,7 +1226,6 @@ void VulkanRenderer::submitComputeCommands()
     //Do the copy on the compute queue
     if (texStagingPending)
     {
-        std::cout << "texStagingPending = true" << std::endl;
         texStagingPending = false;
         VkSubmitInfo computeSubmitInfo {};
         computeSubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -1236,7 +1235,6 @@ void VulkanRenderer::submitComputeCommands()
     }
     else
     {
-        std::cout << "texStagingPending = false" << std::endl;
         VkSubmitInfo computeSubmitInfo {};
         computeSubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         computeSubmitInfo.commandBufferCount = 1;
@@ -1272,9 +1270,7 @@ void VulkanRenderer::updateShader(const ShaderCode& code)
 {
     shaderCode = code;
 
-    std::cout << "createPipeline" << std::endl;
     createComputePipeline();
-    std::cout << "recordCommandBuffer" << std::endl;
     recordComputeCommandBuffer();
 
     window->requestUpdate();
@@ -1327,7 +1323,7 @@ VkShaderModule VulkanRenderer::createShaderFromCode(const ShaderCode& code)
     }
     else
     {
-        auto codeChar = uintVecToCharVec(code); // TODO: Can we not do this?
+        auto codeChar = uintVecToCharVec(code); // TODO: Is this necessary?
 
         QByteArray codeArray = QByteArray(reinterpret_cast<const char*>(codeChar.data()), codeChar.size());
 
