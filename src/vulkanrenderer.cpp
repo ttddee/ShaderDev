@@ -1253,6 +1253,9 @@ void VulkanRenderer::updateImage(const QString& path)
     if (!createTexture(imagePath))
         qFatal("Failed to create texture");
 
+    // Updates the projection size
+    createVertexBuffer();
+
     // Create render target
     if (!createComputeRenderTarget(cpuImage.width(), cpuImage.height()))
         qFatal("Failed to create compute render target.");
