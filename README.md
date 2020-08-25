@@ -1,6 +1,10 @@
 # ShaderDev
 **A desktop application for developing GLSL compute shaders for the purpose of image processing.**
 
+![](/screenshots/ShaderDev01.jpg?raw=true "")
+
+![](/screenshots/ShaderDev02.jpg?raw=true "")
+
 # Dependencies
 
 - [Qt](https://www.qt.io/download)
