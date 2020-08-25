@@ -7,7 +7,7 @@
 
 # Dependencies
 
-- [Qt](https://www.qt.io/download)
+- [Qt](https://www.qt.io/download) > 5.10
 - [SpvShaderCompiler](https://github.com/ttddee/SpvShaderCompiler)
 - [glslang](https://github.com/KhronosGroup/glslang)
 
