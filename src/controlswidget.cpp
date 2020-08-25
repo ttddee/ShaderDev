@@ -15,6 +15,8 @@ ControlsWidget::ControlsWidget(QWidget *parent) :
             this, &ControlsWidget::handleLoadShaderButtonClicked);
     connect(ui->saveShaderButton, &QPushButton::clicked,
             this, &ControlsWidget::handleSaveShaderButtonClicked);
+    connect(ui->originalCheckBox, &QCheckBox::stateChanged,
+            this, &ControlsWidget::handleOriginalCheckboxStateChanged);
 }
 
 void ControlsWidget::setGpuLabel(const QString &s)
@@ -85,6 +87,18 @@ void ControlsWidget::handleCodeHasChanged()
     if(fileName.size() > 0)
     {
         ui->fileNameLabel->setText(fileName + "*");
+    }
+}
+
+void ControlsWidget::handleOriginalCheckboxStateChanged(int state)
+{
+    if(state == 0)
+    {
+        emit originalCheckboxStateChanged(false);
+    }
+    else
+    {
+        emit originalCheckboxStateChanged(true);
     }
 }
 

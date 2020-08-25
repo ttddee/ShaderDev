@@ -29,6 +29,8 @@ WindowManager::WindowManager(MainWindow* w, ControlsWidget* c, VulkanWindow* v, 
             this, &WindowManager::handleShaderCompiled);
     connect(codeEdit, &CodeEdit::textChanged,
             controlsWidget, &ControlsWidget::handleCodeHasChanged);
+    connect(controlsWidget, &ControlsWidget::originalCheckboxStateChanged,
+            this, &WindowManager::handleOriginalCheckboxStateChanged);
 }
 
 void WindowManager::handleRendererHasBeenCreated()
@@ -79,5 +81,11 @@ void WindowManager::handleRequestErrorMessageUpdate(const std::string& msg)
 
 void WindowManager::handleShaderCompiled()
 {
+    vulkanWindow->getRenderer()->updateShader(codeEdit->spirV);
+}
+
+void WindowManager::handleOriginalCheckboxStateChanged(bool state)
+{
+    vulkanWindow->setShowOriginal(state);
     vulkanWindow->getRenderer()->updateShader(codeEdit->spirV);
 }

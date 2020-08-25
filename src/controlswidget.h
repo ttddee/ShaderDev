@@ -29,12 +29,14 @@ signals:
     void imagePathHasChanged(const QString& path);
     void requestFileLoading(const QString& path);
     void requestFileSaving(const QString& path);
+    void originalCheckboxStateChanged(bool state);
 
 public slots:
     void handleLoadImageButtonClicked();
     void handleLoadShaderButtonClicked();
     void handleSaveShaderButtonClicked();
     void handleCodeHasChanged();
+    void handleOriginalCheckboxStateChanged(int state);
 };
 
 #endif // CONTROLSWIDGET_H

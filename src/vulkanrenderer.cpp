@@ -1297,7 +1297,7 @@ VkShaderModule VulkanRenderer::createShaderFromCode(const ShaderCode& code)
     // If this receives empty shader code we go ahead and read the NOOP shader from disk and continue rendering.
     // Pretty bad, needs to be changed.
 
-    if (shaderCode.size() == 0)
+    if (shaderCode.size() == 0 || window->getShowOriginal())
     {
         QFile file(":/shaders/noop_comp.spv");
         if (!file.open(QIODevice::ReadOnly)) {

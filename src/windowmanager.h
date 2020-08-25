@@ -31,6 +31,7 @@ public slots:
     void handleFileSavingRequest(const QString& path);
     void handleRequestErrorMessageUpdate(const std::string& msg);
     void handleShaderCompiled();
+    void handleOriginalCheckboxStateChanged(bool state);
 
 };
 

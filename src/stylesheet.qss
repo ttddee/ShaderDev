@@ -16,7 +16,7 @@ FGLight: #f1f1f1
 QWidget {
     background-color: #1d2024;
     color: #f1f1f1;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 QPlainTextEdit {
@@ -73,6 +73,25 @@ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
 
 LineNumberArea {
     font-weight: bold;
+}
+
+QCheckBox {
+    background-color: #181b1e;
+    color: #f1f1f1;
+}
+QCheckBox::indicator:checked {
+    background-color: #00b6dd;
+    color: #f1f1f1;
+    border-radius: 3px;
+}
+QCheckBox::indicator:unchecked {
+    background-color: #282d31;
+    color: #f1f1f1;
+    border-radius: 3px;
+}
+QCheckBox::indicator:unchecked:hover {
+    background-color: #626971;
+    color: #f1f1f1;
 }
 
 

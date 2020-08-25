@@ -1,5 +1,7 @@
 #include "vulkanwindow.h"
 
+#include <iostream>
+
 #include <QMouseEvent>
 
 #include "vulkanrenderer.h"
@@ -16,6 +18,16 @@ QVulkanWindowRenderer *VulkanWindow::createRenderer()
 VulkanRenderer* VulkanWindow::getRenderer()
 {
     return renderer;
+}
+
+bool VulkanWindow::getShowOriginal()
+{
+    return showOriginal;
+}
+
+void VulkanWindow::setShowOriginal(bool b)
+{
+    showOriginal = b;
 }
 
 void VulkanWindow::mousePressEvent(QMouseEvent *e)
