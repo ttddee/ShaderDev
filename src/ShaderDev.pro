@@ -51,6 +51,7 @@ FORMS += \
     mainwindow.ui
 
 RESOURCES += \
+    images.qrc \
     shaders.qrc \
     style.qrc
 
@@ -58,9 +59,6 @@ DISTFILES += \
     stylesheet.qss
 
 win32-msvc* {
-
-CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD
-CONFIG(release, debug|release): DESTDIR = $$OUT_PWD
 
 INCLUDEPATH += $$PWD/../external/SpvShaderCompiler/include
 
@@ -91,6 +89,3 @@ LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lSPVRemapper
 LIBS += -L$$PWD/../external/linux/SpvShaderCompiler/lib -lGenericCodeGen
 
 }
-
-
-
