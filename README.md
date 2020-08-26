@@ -45,3 +45,5 @@ There are two bindings:
 - **inputImage**: The image that was loaded from disk.
 - **resultImage**: The final image that will be written to.
 
+In the **shaders** folder there are also a couple of examples. I will add more in the future.
+
