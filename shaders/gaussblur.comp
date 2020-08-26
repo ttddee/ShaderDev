@@ -1,0 +1,43 @@
+#version 450
+
+layout (local_size_x = 16, local_size_y = 16) in;
+layout (binding = 0, rgba8) uniform readonly image2D inputImage;
+layout (binding = 1, rgba8) uniform image2D resultImage;
+
+// Separable Gaussian Blur based on: https://callumhay.blogspot.com/2010/09/gaussian-blur-shader-glsl.html
+
+void main()
+{   
+    const int kernelSize = 9;
+
+    float sigma = 3.0;
+	 float blurSize = 1.0;
+	 const float pi = 3.14159265f;
+
+	 const float numBlurPixelsPerSide = (kernelSize - 1) / 2 ;
+
+	 vec3 incrementalGaussian;
+    incrementalGaussian.x = 1.0f / (sqrt(2.0f * pi) * sigma);
+    incrementalGaussian.y = exp(-0.5f / (sigma * sigma));
+    incrementalGaussian.z = incrementalGaussian.y * incrementalGaussian.y;
+
+	 vec3 avgValue = vec3(0.0f, 0.0f, 0.0f);
+    float coefficientSum = 0.0f;
+
+	 avgValue += imageLoad(inputImage, ivec2(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y)).rgb  * incrementalGaussian.x;
+  	 coefficientSum += incrementalGaussian.x;
+    incrementalGaussian.xy *= incrementalGaussian.yz;
+
+    // Horizontal
+    for (float i = 1.0f; i <= numBlurPixelsPerSide; i++) 
+    { 
+        avgValue += imageLoad(inputImage, ivec2(gl_GlobalInvocationID.x - i * blurSize, gl_GlobalInvocationID.y)).rgb * incrementalGaussian.x;
+        avgValue += imageLoad(inputImage, ivec2(gl_GlobalInvocationID.x + i * blurSize, gl_GlobalInvocationID.y)).rgb * incrementalGaussian.x;   
+        coefficientSum += 2 * incrementalGaussian.x;
+        incrementalGaussian.xy *= incrementalGaussian.yz;
+    }
+
+    vec4 res =  vec4(avgValue / coefficientSum, 1.0);
+
+    imageStore(resultImage, ivec2(gl_GlobalInvocationID.xy), res);
+}
