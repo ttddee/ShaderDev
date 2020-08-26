@@ -22,7 +22,7 @@ CodeEdit::CodeEdit(QWidget *parent)
             this, &CodeEdit::highlightCurrentLine);
 
     // Set Tab key to four spaces
-    setTabStopDistance(QFontMetricsF(font()).horizontalAdvance(' ') * 4);
+    setTabStopDistance(QFontMetrics(font()).horizontalAdvance(' ') * 4);
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
