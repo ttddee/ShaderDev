@@ -109,7 +109,7 @@ private:
     QSize texSize;
 
     QImage cpuImage;
-    QString imagePath = ":/images/empty.jpg";
+    QString imagePath = ":/empty.jpg";
 
     int concurrentFrameCount;
 

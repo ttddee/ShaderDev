@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="OpenSans-Bold.ttf">../fonts/OpenSans-Bold.ttf</file>
+        <file alias="OpenSans-Regular.ttf">../fonts/OpenSans-Regular.ttf</file>
+        <file>stylesheet.qss</file>
+        <file alias="empty.jpg">../images/empty.jpg</file>
+        <file alias="noop_comp.spv">../shaders/noop_comp.spv</file>
+        <file alias="texture_frag.spv">../shaders/texture_frag.spv</file>
+        <file alias="texture_vert.spv">../shaders/texture_vert.spv</file>      
+    </qresource>
+</RCC>

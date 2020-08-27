@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>../shaders/texture_frag.spv</file>
-        <file>../shaders/texture_vert.spv</file>
-        <file>../shaders/noop_comp.spv</file>
-    </qresource>
-</RCC>

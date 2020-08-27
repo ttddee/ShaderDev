@@ -51,9 +51,7 @@ FORMS += \
     mainwindow.ui
 
 RESOURCES += \
-    images.qrc \
-    shaders.qrc \
-    style.qrc
+    resources.qrc
 
 DISTFILES += \
     stylesheet.qss

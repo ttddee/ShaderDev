@@ -16,7 +16,7 @@ FGLight: #f1f1f1
 QWidget {
     background-color: #1d2024;
     color: #f1f1f1;
-    font-size: 14px;
+    font: 14px "Open Sans";
 }
 
 QPlainTextEdit {
