@@ -80,14 +80,6 @@ void WindowManager::handleShaderSavingRequest(const QString& path)
 
 void WindowManager::handleCompiledSavingRequest(const QString& path)
 {
-    QFile file(path);
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        QMessageBox::information(controlsWidget, tr("Unable to open file"),
-        file.errorString());
-        return;
-    }
-
     if (codeEdit->spirV.size() == 0)
     {
         QMessageBox::information(controlsWidget, "Unable to open file", "Nothing compiled yet?");
