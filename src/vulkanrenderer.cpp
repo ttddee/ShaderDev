@@ -1276,7 +1276,7 @@ void VulkanRenderer::updateShader(const ShaderCode& code)
     window->requestUpdate();
 }
 
-std::vector<char> uintVecToCharVec(const std::vector<unsigned int>& in)
+std::vector<char> VulkanRenderer::uintVecToCharVec(const std::vector<unsigned int>& in)
 {
     std::vector<char> out;
 

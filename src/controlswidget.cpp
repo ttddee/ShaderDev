@@ -15,16 +15,13 @@ ControlsWidget::ControlsWidget(QWidget *parent) :
             this, &ControlsWidget::handleLoadShaderButtonClicked);
     connect(ui->saveShaderButton, &QPushButton::clicked,
             this, &ControlsWidget::handleSaveShaderButtonClicked);
+    connect(ui->saveCompiledButton, &QPushButton::clicked,
+            this, &ControlsWidget::handleSaveCompiledButtonClicked);
     connect(ui->originalCheckBox, &QCheckBox::stateChanged,
             this, &ControlsWidget::handleOriginalCheckboxStateChanged);
 }
 
-void ControlsWidget::setGpuLabel(const QString &s)
-{
-    ui->gpuLabel->setText(s);
-}
-
-void ControlsWidget::handleFileHasBeenSaved(const QString& path)
+void ControlsWidget::handleShaderHasBeenSaved(const QString& path)
 {
     fileIsDirty = false;
     ui->fileNameLabel->setText(fileName);
@@ -74,10 +71,21 @@ void ControlsWidget::handleSaveShaderButtonClicked()
 {
     auto saveFileName = QFileDialog::getSaveFileName(this,
                                                      tr("Save Shader"), "",
-                                                     tr("Shader (*.comp);;All Files (*)"));
+                                                     tr("Shader (*.comp)"));
     if(!saveFileName.isEmpty())
     {
-        emit requestFileSaving(saveFileName);
+        emit requestShaderSaving(saveFileName);
+    }
+}
+
+void ControlsWidget::handleSaveCompiledButtonClicked()
+{
+    auto saveFileName = QFileDialog::getSaveFileName(this,
+                                                     tr("Save SPV"), "",
+                                                     tr("SPIR-V (*.spv)"));
+    if(!saveFileName.isEmpty())
+    {
+        emit requestCompiledSaving(saveFileName);
     }
 }
 

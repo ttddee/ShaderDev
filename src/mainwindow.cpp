@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QStatusBar>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -14,6 +16,11 @@ MainWindow::MainWindow(QWidget *parent)
                              ui->vulkanWidget->getVulkanWindow(),
                              ui->codeEdit,
                              ui->outputEdit);
+}
+
+void MainWindow::setStatusMessage(const QString &text)
+{
+    statusBar()->showMessage(text);
 }
 
 MainWindow::~MainWindow()

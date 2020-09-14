@@ -32,6 +32,8 @@ public:
     void translate(float dx, float dy);
     void scale(float s);
 
+    std::vector<char> uintVecToCharVec(const std::vector<unsigned int>& in);
+
     QString getGpuName();
 
 private:

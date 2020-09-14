@@ -28,7 +28,8 @@ public slots:
     void handleRendererHasBeenCreated();
     void handleImagePathHasChanged(const QString& path);
     void handleFileLoadingRequest(const QString& path);
-    void handleFileSavingRequest(const QString& path);
+    void handleShaderSavingRequest(const QString& path);
+    void handleCompiledSavingRequest(const QString& path);
     void handleRequestErrorMessageUpdate(const std::string& msg);
     void handleShaderCompiled();
     void handleOriginalCheckboxStateChanged(bool state);

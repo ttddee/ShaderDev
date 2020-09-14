@@ -1,6 +1,7 @@
 #include "windowmanager.h"
 
 #include <iostream>
+#include <fstream>
 
 #include <QMessageBox>
 
@@ -21,8 +22,10 @@ WindowManager::WindowManager(MainWindow* w, ControlsWidget* c, VulkanWindow* v, 
             this, &WindowManager::handleImagePathHasChanged);
     connect(controlsWidget, &ControlsWidget::requestFileLoading,
             this, &WindowManager::handleFileLoadingRequest);
-    connect(controlsWidget, &ControlsWidget::requestFileSaving,
-            this, &WindowManager::handleFileSavingRequest);
+    connect(controlsWidget, &ControlsWidget::requestShaderSaving,
+            this, &WindowManager::handleShaderSavingRequest);
+    connect(controlsWidget, &ControlsWidget::requestCompiledSaving,
+            this, &WindowManager::handleCompiledSavingRequest);
     connect(codeEdit, &CodeEdit::requestErrorMessageUpdate,
             this, &WindowManager::handleRequestErrorMessageUpdate);
     connect(codeEdit, &CodeEdit::shaderCompiledSuccessfully,
@@ -35,7 +38,8 @@ WindowManager::WindowManager(MainWindow* w, ControlsWidget* c, VulkanWindow* v, 
 
 void WindowManager::handleRendererHasBeenCreated()
 {
-    controlsWidget->setGpuLabel(vulkanWindow->getRenderer()->getGpuName());
+    QString status = "GPU: " + vulkanWindow->getRenderer()->getGpuName();
+    mainWindow->setStatusMessage(status);
 }
 
 void WindowManager::handleImagePathHasChanged(const QString& path)
@@ -60,7 +64,7 @@ void WindowManager::handleFileLoadingRequest(const QString& path)
     codeEdit->blockSignals(false);
 }
 
-void WindowManager::handleFileSavingRequest(const QString& path)
+void WindowManager::handleShaderSavingRequest(const QString& path)
 {
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly))
@@ -71,7 +75,32 @@ void WindowManager::handleFileSavingRequest(const QString& path)
     }
     QTextStream out(&file);
     out << codeEdit->document()->toPlainText();
-    controlsWidget->handleFileHasBeenSaved(path);
+    controlsWidget->handleShaderHasBeenSaved(path);
+}
+
+void WindowManager::handleCompiledSavingRequest(const QString& path)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::information(controlsWidget, tr("Unable to open file"),
+        file.errorString());
+        return;
+    }
+
+    if (codeEdit->spirV.size() == 0)
+    {
+        QMessageBox::information(controlsWidget, "Unable to open file", "Nothing compiled yet?");
+    }
+    else
+    {
+        auto data = vulkanWindow->getRenderer()->uintVecToCharVec(codeEdit->spirV);
+
+        std::ofstream f;
+        f.open(path.toStdString(), std::ios_base::binary);
+        f.write((char*) &data[0], data.size() * sizeof (char));
+        f.close();
+    }
 }
 
 void WindowManager::handleRequestErrorMessageUpdate(const std::string& msg)

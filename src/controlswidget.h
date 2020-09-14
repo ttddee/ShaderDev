@@ -15,8 +15,7 @@ public:
     explicit ControlsWidget(QWidget *parent = nullptr);
     ~ControlsWidget();
 
-    void setGpuLabel(const QString& s);
-    void handleFileHasBeenSaved(const QString& path);
+    void handleShaderHasBeenSaved(const QString& path);
 
 private:
     Ui::ControlsWidget *ui;
@@ -28,13 +27,15 @@ private:
 signals:
     void imagePathHasChanged(const QString& path);
     void requestFileLoading(const QString& path);
-    void requestFileSaving(const QString& path);
+    void requestShaderSaving(const QString& path);
+    void requestCompiledSaving(const QString& path);
     void originalCheckboxStateChanged(bool state);
 
 public slots:
     void handleLoadImageButtonClicked();
     void handleLoadShaderButtonClicked();
     void handleSaveShaderButtonClicked();
+    void handleSaveCompiledButtonClicked();
     void handleCodeHasChanged();
     void handleOriginalCheckboxStateChanged(int state);
 };

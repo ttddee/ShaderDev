@@ -16,49 +16,37 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="9" column="0" colspan="2">
-      <widget class="QLabel" name="label_3">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>GPU:</string>
+     <item row="6" column="0" colspan="2">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
-      <spacer name="verticalSpacer">
+     <item row="8" column="0" colspan="2">
+      <widget class="Line" name="line_3">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0">
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="maximumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>28</width>
+         <height>16777215</height>
         </size>
        </property>
-      </spacer>
+       <property name="text">
+        <string>File:</string>
+       </property>
+      </widget>
      </item>
      <item row="10" column="0" colspan="2">
-      <widget class="QLabel" name="gpuLabel">
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0" colspan="2">
-      <widget class="QPushButton" name="loadImageButton">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Load Image</string>
+      <widget class="Line" name="line_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
@@ -75,6 +63,26 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QCheckBox" name="originalCheckBox">
+       <property name="text">
+        <string>Show Original</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
      <item row="5" column="0" colspan="2">
       <widget class="QPushButton" name="loadShaderButton">
        <property name="minimumSize">
@@ -88,13 +96,6 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0" colspan="2">
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0" colspan="2">
       <widget class="Line" name="line_5">
        <property name="orientation">
@@ -102,22 +103,15 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0" colspan="2">
-      <widget class="QCheckBox" name="originalCheckBox">
+     <item row="9" column="0" colspan="2">
+      <widget class="QPushButton" name="saveCompiledButton">
        <property name="text">
-        <string>Show Original</string>
+        <string>Save Compiled Output</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="0" colspan="2">
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0" colspan="2">
-      <widget class="Line" name="line_4">
+     <item row="4" column="0" colspan="2">
+      <widget class="Line" name="line">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -130,16 +124,16 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="maximumSize">
+     <item row="3" column="0" colspan="2">
+      <widget class="QPushButton" name="loadImageButton">
+       <property name="minimumSize">
         <size>
-         <width>28</width>
-         <height>16777215</height>
+         <width>0</width>
+         <height>20</height>
         </size>
        </property>
        <property name="text">
-        <string>File:</string>
+        <string>Load Image</string>
        </property>
       </widget>
      </item>
