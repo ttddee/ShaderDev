@@ -1,0 +1,27 @@
+#version 450
+
+layout (local_size_x = 16, local_size_y = 16) in;
+layout (binding = 0, rgba8) uniform readonly image2D inputImage;
+layout (binding = 1, rgba8) uniform image2D resultImage;
+
+int topCrop = 10;
+int rightCrop = 10;
+int bottomCrop = 10;
+int leftCrop = 10;
+
+void main()
+{   
+    ivec2 imgSize = imageSize(inputImage);
+
+    ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
+
+    vec3 rgb = imageLoad(inputImage, pixelCoords + ivec2(leftCrop, topCrop)).rgb;           
+                     
+    vec4 pixel = vec4(rgb, 1.0);
+
+    if(gl_GlobalInvocationID.x <= imgSize.x - leftCrop - rightCrop &&
+    gl_GlobalInvocationID.y <= imgSize.y - topCrop - bottomCrop)
+    {
+        imageStore(resultImage, pixelCoords, pixel);
+    }
+}
