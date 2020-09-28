@@ -27,7 +27,7 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
             QStringLiteral("\\bout\\b"), QStringLiteral("\\bsmooth\\b"), QStringLiteral("\\buniform\\b"),
             QStringLiteral("\\bvarying\\b"), QStringLiteral("\\bbuffer\\b"), QStringLiteral("\\bshared\\b"),
             QStringLiteral("\\bcoherent\\b"), QStringLiteral("\\breadonly\\b"), QStringLiteral("\\bwriteonly\\b"),
-            QStringLiteral("\\bvolatile\\b"), QStringLiteral("\\brestrict\\b")
+            QStringLiteral("\\bvolatile\\b"), QStringLiteral("\\brestrict\\b"), QStringLiteral("\\bivec2\\b")
         };
         for (const QString &pattern : keywordPatterns) {
             rule.pattern = QRegularExpression(pattern);
